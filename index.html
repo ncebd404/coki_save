@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <title>Combined Tool</title>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
 <style>
     body {
       margin: 0;
@@ -249,16 +249,13 @@ function copyCode() { copyText(document.getElementById("codeDisplayBox").textCon
 function copyEmail() { copyText(document.getElementById("emailDisplayBox").textContent); }
 
 function saveEntry() {
-  const email = data[index][0].split('|')[0];
+  const email = data[index][0]?.split('|')[0] || 'EMAIL_NOT_FOUND';
   const password = "newfb@121";
-  const cookies = document.getElementById("cookieInput").value.trim();
-  const code = document.getElementById("codeDisplayBox").textContent.trim();
+  const cookies = document.getElementById("cookieInput").value.trim() || 'COOKIE_NOT_FOUND';
+  const code = document.getElementById("codeDisplayBox").textContent.trim() || 'CODE_NOT_FOUND';
   const uidMatch = cookies.match(/c_user=(\d+)/);
   const uid = uidMatch ? uidMatch[1] : 'UID_NOT_FOUND';
-  if (!uid || !email || !cookies || !code || code === 'Waiting for code...' || code === 'Finding......') {
-    alert("UID, Email, Code, Cookie সব ঠিকঠাক দিন!");
-    return;
-  }
+
   const line = `${uid}|${password}|${email}|${code}|${cookies}`;
   allEntries.push(line);
   localStorage.setItem('entries', JSON.stringify(allEntries));
