@@ -1,1 +1,130 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1" name="viewport"><title>Combined Tool</title><link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet"><style>body{margin:0;font-family:'Share Tech Mono',monospace;background:#000;color:#0f0;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:10px}.a{background:#111;padding:25px 20px;margin-top:20px;border-radius:12px;box-shadow:0 0 20px rgba(0,255,0,0.4);width:100%;max-width:600px}input,button,textarea{font-family:'Share Tech Mono',monospace;background:#000;color:#0f0;border:1px solid #0f0;padding:10px;font-size:16px;width:100%;box-sizing:border-box;margin-top:10px;border-radius:6px}textarea{resize:vertical;min-height:60px}button:hover{background-color:#0f0;color:#000;cursor:pointer;box-shadow:0 0 8px #0f0}.b{width:100%;min-height:50px;display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px dashed #0f0;background:#000;border-radius:6px;margin-bottom:15px;box-sizing:border-box;box-shadow:0 0 6px rgba(0,255,0,0.2)}#c{font-size:16px;flex:1;text-align:left}#d{color:red;margin-top:10px}.e{font-size:12px;padding:4px 6px;width:auto;margin-left:10px}.f{width:80px;font-size:12px;padding:4px;margin-left:10px;background:#111;border:1px solid #0f0;border-radius:4px}.g{position:absolute;top:10px;right:10px}.h{cursor:pointer;font-size:22px;color:#0f0;padding:5px;border:1px solid #0f0;border-radius:4px;background:#111}.h:hover{background-color:#0f0;color:#000}.i{display:none;position:fixed;top:40px;right:10px;background:#111;border:1px solid #0f0;border-radius:6px;padding:15px;width:300px;max-width:90%;z-index:1000;box-shadow:0 0 10px rgba(0,255,0,0.4)}.i textarea{height:100px}.j,.k{width:100%;display:flex;align-items:center;padding:10px 12px;border:1px dashed #0f0;background:#000;border-radius:6px;margin-bottom:15px;box-sizing:border-box;box-shadow:0 0 6px rgba(0,255,0,0.2);font-size:14px}.j label,.k label{margin-right:10px;font-weight:bold}.j span,.k span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.l{font-size:12px;color:#0f0;margin-top:5px;text-align:right}</style></head><body><div class="g"><div class="h" id="m">⋮</div><div class="i" id="n"><label><strong>Bulk Emails</strong></label><textarea id="o" placeholder="Enter email|password|refresh_token|client_id (one per line)" style="height:60px;"></textarea><label><strong>Bulk UIDs</strong></label><textarea id="p" placeholder="Enter uid|password (one per line)" style="height:60px;"></textarea><button onclick="q()">Apply</button><button onclick="r()">Clear Data</button><hr><button onclick="s()">Download All</button><button onclick="t()">Delete All</button></div></div><div class="a"><div class="b" style="justify-content:space-between;"><div id="c" style="flex:1;">Waiting for code...</div><div style="display:flex;gap:6px;"><button class="e" onclick="u()">Copy</button><button class="e" onclick="v()">Call API</button></div></div><div id="d"></div><input id="w" placeholder="email|password|refresh_token|client_id" style="display:none;" type="text"><div class="k"><label><strong>UID:</strong></label><span id="x">UID will appear here</span><button class="e" onclick="y()">Copy</button><input id="z" class="f" min="1" placeholder="Go to #" type="number"></div><div class="l">UID <span id="aa">1</span> of <span id="ab">0</span></div><div class="j"><label><strong>Email:</strong></label><span id="ac">Email will appear here</span><button class="e" onclick="ad()">Copy</button><input id="ae" class="f" min="1" placeholder="Go to #" type="number"></div><div class="l">Email <span id="af">1</span> of <span id="ag">0</span></div><input id="ah" placeholder="Enter webmail..." type="text"><input id="ai" placeholder="Enter 2FA key..." type="text"><button onclick="aj()">Save Entry</button><button onclick="ak()">Next</button><textarea id="al" readonly></textarea></div><script>let d=[],e=[],f=0,g=null,h=JSON.parse(localStorage.getItem('entries')||'[]');document.getElementById('al').value=h.join('\n');function i(){console.log('togglePopup called');const a=document.getElementById('n');a.style.display=a.style.display==='block'?'none':'block'}function q(){const a=document.getElementById('o').value.trim(),b=document.getElementById('p').value.trim();if(!a||!b){alert("দুটোই ইমেইল এবং UID ফিল্ড প্রয়োজন।");return}d=a.split('\n').map(a=>[a.trim()]).filter(a=>a[0]);e=b.split('\n').map(a=>[a.trim()]).filter(a=>a[0]);f=0;localStorage.setItem("currentIndex","0");j();i()}function k(){if(f<d.length){const a=d[f][0].split('|')[0];document.getElementById("ac").textContent=a}}function l(){if(f<e.length){const a=e[f][0].split('|')[0];document.getElementById("x").textContent=a}}function j(){if(f<d.length&&f<e.length){const a=d[f][0];document.getElementById("w").value=a;document.getElementById("af").textContent=f+1;document.getElementById("ag").textContent=d.length;document.getElementById("aa").textContent=f+1;document.getElementById("ab").textContent=e.length;localStorage.setItem("currentIndex",f);v();k();l();if(g)clearInterval(g);g=setInterval(v,5000)}}function v(){const a=document.getElementById('w').value.trim(),[b,c,m,n]=a.split('|'),o=document.getElementById('c'),p=document.getElementById('d');p.textContent='';if(!b||!m||!n){p.textContent="দয়া করে ফরম্যাট ব্যবহার করুন: email|password|refresh_token|client_id";return}fetch('https://tools.dongvanfb.net/api/get_code_oauth2',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:b,refresh_token:m,client_id:n,type:'facebook'})}).then(a=>a.json()).then(a=>{o.textContent=a.code||'Finding......';}).catch(a=>{p.textContent="ত্রুটি: "+a.message})}function ak(){f++;if(f>=d.length||f>=e.length)f=0;j()}function am(){const a=parseInt(document.getElementById("ae").value);if(a>=1&&a<=d.length){f=a-1;j()}}function an(){const a=parseInt(document.getElementById("z").value);if(a>=1&&a<=e.length){f=a-1;j()}}function ao(a){navigator.clipboard.writeText(a).catch(()=>{const b=document.createElement("textarea");b.value=a;b.style.position="absolute";b.style.left="-9999px";document.body.appendChild(b);b.select();document.execCommand("copy");document.body.removeChild(b)})}function u(){ao(document.getElementById("c").textContent)}function ad(){ao(document.getElementById("ac").textContent)}function y(){ao(document.getElementById("x").textContent)}function aj(){const a=e[f]?.[0]?.split('|')[0]||'NOT_FOUND',b=e[f]?.[0]?.split('|')[1]||'NOT_FOUND',c=document.getElementById("ah").value.trim()||'NOT_FOUND',m=document.getElementById("ai").value.trim()||'NOT_FOUND',n=`${a}|${b}|${c}|${m}`;h.push(n);localStorage.setItem('entries',JSON.stringify(h));document.getElementById('al').value=h.join('\n');document.getElementById("ah").value='';document.getElementById("ai").value=''}function s(){const a=h.join('\n');if(!a.trim())return;const b=new Blob([a],{type:'text/plain'}),c=URL.createObjectURL(b),m=document.createElement('a');m.href=c;m.download='profile_2fa_data.txt';m.click();URL.revokeObjectURL(c)}function t(){if(confirm("আপনি কি নিশ্চিত যে সব সেভ করা এন্ট্রি মুছতে চান?")){h=[];localStorage.removeItem('entries');document.getElementById('al').value=''}}function r(){if(confirm("পপআপ ইনপুট ডাটা মুছতে চান?")){document.getElementById("o").value='';document.getElementById("p").value='';localStorage.removeItem("bulkEmails");localStorage.removeItem("bulkUIDs")}}document.getElementById("o").addEventListener("input",function(){localStorage.setItem("bulkEmails",this.value)});document.getElementById("p").addEventListener("input",function(){localStorage.setItem("bulkUIDs",this.value)});window.addEventListener("load",function(){const a=localStorage.getItem("bulkEmails"),b=localStorage.getItem("bulkUIDs");if(a)document.getElementById("o").value=a;if(b)document.getElementById("p").value=b;document.getElementById('n').style.display='none';document.getElementById('m').addEventListener('click',function(){console.log('dotMenu click event triggered');i()})});document.getElementById("ae").addEventListener("keypress",function(a){if(a.key==="Enter"){am()}});document.getElementById("z").addEventListener("keypress",function(a){if(a.key==="Enter"){an()}});</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Temp Mail Debug</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f9f9f9;
+      padding: 20px;
+    }
+    .box {
+      background: #fff;
+      padding: 15px;
+      border-radius: 10px;
+      max-width: 600px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    button {
+      margin: 5px 0;
+      padding: 10px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    pre {
+      background: #eee;
+      padding: 10px;
+      border-radius: 5px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>🕵️‍♂️ Temp Mail Debug Tool</h2>
+
+    <button onclick="createInbox()">Create Temp Email</button>
+    <p><strong>Email:</strong> <span id="emailDisplay">[None]</span></p>
+
+    <button onclick="getEmails()">Check Inbox</button>
+    <button onclick="deleteInbox()">Delete Inbox</button>
+
+    <h3>📨 Inbox Response:</h3>
+    <pre id="inboxOutput">No data yet.</pre>
+  </div>
+
+  <script>
+    const apiKey = "1208b4a2bdmsh02e5b8753065b9fp12fa86jsnf2f80ab1f75c";
+    const apiHost = "inboxes-com.p.rapidapi.com";
+    let currentEmail = "";
+
+    async function createInbox() {
+      try {
+        const res = await fetch("https://inboxes-com.p.rapidapi.com/inboxes", {
+          method: "POST",
+          headers: {
+            "x-rapidapi-key": apiKey,
+            "x-rapidapi-host": apiHost,
+            "Content-Type": "application/json"
+          },
+          body: "{}"
+        });
+
+        const data = await res.json();
+        console.log("📩 Create Inbox Response:", data);
+        if (data && data.address) {
+          currentEmail = data.address;
+          document.getElementById("emailDisplay").innerText = currentEmail;
+        } else {
+          document.getElementById("emailDisplay").innerText = "undefined / no address";
+        }
+      } catch (error) {
+        console.error("❌ Create Error:", error);
+        alert("Create API call failed. See console.");
+      }
+    }
+
+    async function getEmails() {
+      if (!currentEmail) return alert("Email not set yet!");
+
+      try {
+        const res = await fetch(`https://inboxes-com.p.rapidapi.com/inboxes/${currentEmail}`, {
+          method: "GET",
+          headers: {
+            "x-rapidapi-key": apiKey,
+            "x-rapidapi-host": apiHost
+          }
+        });
+
+        const data = await res.json();
+        console.log("📬 Inbox Data:", data);
+        document.getElementById("inboxOutput").innerText = JSON.stringify(data, null, 2);
+      } catch (err) {
+        console.error("❌ Inbox Fetch Error:", err);
+        alert("Inbox fetch failed. Check console.");
+      }
+    }
+
+    async function deleteInbox() {
+      if (!currentEmail) return alert("No email to delete.");
+
+      try {
+        const res = await fetch(`https://inboxes-com.p.rapidapi.com/inboxes/${currentEmail}`, {
+          method: "DELETE",
+          headers: {
+            "x-rapidapi-key": apiKey,
+            "x-rapidapi-host": apiHost,
+            "Content-Type": "application/json"
+          },
+          body: "{}"
+        });
+
+        const data = await res.text();
+        console.log("🗑️ Delete response:", data);
+        alert("Inbox deleted.");
+        currentEmail = "";
+        document.getElementById("emailDisplay").innerText = "[None]";
+        document.getElementById("inboxOutput").innerText = "No data yet.";
+      } catch (err) {
+        console.error("❌ Delete Error:", err);
+        alert("Delete failed. See console.");
+      }
+    }
+  </script>
+</body>
+</html>
